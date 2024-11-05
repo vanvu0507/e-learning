@@ -42,7 +42,7 @@ router.delete('/delete/:id', async(req, res)=> {
     }
 });
 
-router.post('/bulk-upload', upload.array('file', 10), async(req, res)=> {
+router.post('/bulk-upload', upload.array('files', 10), async(req, res)=> {
     try {
         const uploadPromises = req.files.map(fileItem=> uploadMediaToCloudinary(fileItem.path))
 
