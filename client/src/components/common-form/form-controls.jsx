@@ -1,7 +1,6 @@
-import { SelectContent } from "@radix-ui/react-select";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Select, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 
 function FormControls ({formControls = [], formData,  setFormData}) {
@@ -32,7 +31,7 @@ function FormControls ({formControls = [], formData,  setFormData}) {
                 })}
                 value={currentControlItemValue}
                 >
-                    <SelectTrigger classNamew="w-full">
+                    <SelectTrigger className="w-full">
                         <SelectValue
                         placeholder={getControlItem.label}
                         />

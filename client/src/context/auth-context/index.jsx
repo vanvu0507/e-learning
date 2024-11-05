@@ -68,6 +68,13 @@ async function handleLoginUser(event) {
         }
     }
 
+    function resetCredentials() {
+        setAuth({
+            authenticate: false,
+            user: null
+        })
+    }
+
     //check auth user
     useEffect(() => {
         checkAuthUser();
@@ -78,6 +85,7 @@ async function handleLoginUser(event) {
         signUpFormData, setSignUpFormData,
         handleRegisterUser, handleLoginUser,
         auth,
+        resetCredentials,
     }}>
         {
             loading ? <Skeleton/> : children
