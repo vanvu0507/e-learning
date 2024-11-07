@@ -43,7 +43,7 @@ function InstructorCourses({listOfCourses}) {
                                     <TableRow>
                                         <TableCell className="font-medium">{course?.title}</TableCell>
                                         <TableCell>{course?.students?.length}</TableCell>
-                                        <TableCell>${course?.pricing}</TableCell>
+                                        <TableCell>${course?.students?.length * course?.pricing}</TableCell>
                                         <TableCell className="text-right">
                                             <Button onClick={()=> {
                                                 navigate(`/instructor/edit-course/${course?._id}`)

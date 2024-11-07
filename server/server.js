@@ -8,6 +8,7 @@ const instructorCourseRoutes = require('./routes/instructor-routes/course-routes
 const studentViewCourseRoutes = require('./routes/student-routes/course-routes')
 const studentViewOrderRoutes = require('./routes/student-routes/order-routes')
 const studentCoursesRoutes = require('./routes/student-routes/student-courses-routes')
+const studentCoursesProgressRoutes = require('./routes/student-routes/course-progress-routes')
 
 
 const app = express();
@@ -37,6 +38,7 @@ app.use('/instructor/course', instructorCourseRoutes);
 app.use('/student/course', studentViewCourseRoutes);
 app.use('/student/order', studentViewOrderRoutes);
 app.use('/student/courses-bought', studentCoursesRoutes);
+app.use('/student/course-progress', studentCoursesProgressRoutes);
 
 app.use((err, req, res, next) => {
     console.log(err.stack)

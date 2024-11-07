@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')).render(
         <InstructorProvider>
           <StudentProvider> 
             <App />
-          /</StudentProvider>
+          </StudentProvider>
         </InstructorProvider>
       </AuthProvider>
   </BrowserRouter>

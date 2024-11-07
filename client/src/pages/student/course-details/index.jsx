@@ -5,10 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import VideoPlayer from "@/components/video-player";
 import { AuthContext } from "@/context/auth-context";
 import { StudentContext } from "@/context/student-context";
-import { createPaymentService, fetchStudentViewCourseDetailService } from "@/services";
+import { checkCoursePurchaseInfoService, createPaymentService, fetchStudentViewCourseDetailService } from "@/services";
 import { CheckCircle, Globe, Lock, PlayCircle } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 
 function StudentViewCourseDetailsPage() {
@@ -23,10 +23,20 @@ function StudentViewCourseDetailsPage() {
     const [showFreePreviewDialog, setShowFreePreviewDialog] = useState(false);
     const[approvalUrl, setApprovalUrl] = useState('');
 
+    const navigate = useNavigate();
+
     const { id } = useParams();
     const location = useLocation();
 
     async function fetchStudentViewCourseDetail() {
+
+        const checkCoursePurchaseInfoResponse = await checkCoursePurchaseInfoService(currentCourseDetailsId, auth?.user._id);
+
+        if(checkCoursePurchaseInfoResponse?.success && checkCoursePurchaseInfoResponse?.data) {
+            navigate(`/course-progress/${currentCourseDetailsId}`)
+            return
+        }
+
         const response = await fetchStudentViewCourseDetailService(
             currentCourseDetailsId
         );
@@ -65,7 +75,7 @@ function StudentViewCourseDetailsPage() {
         courseId: studentViewCourseDetails?._id,
         coursePricing: studentViewCourseDetails?.pricing
      };
-     console.log(paymentPayload, 'paymentPayload');
+    //  console.log(paymentPayload, 'paymentPayload');
      const response = await createPaymentService(paymentPayload);
      if(response?.success) {
         sessionStorage.setItem('currentOrderId', JSON.stringify(response?.data?.orderId));

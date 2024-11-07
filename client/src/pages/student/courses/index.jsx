@@ -39,14 +39,14 @@ function StudentViewCoursesPage() {
         let cpyFilters = {...filters};
         const indexOfCurrentSection = Object.keys(cpyFilters).indexOf(getSectionId);
 
-        console.log(indexOfCurrentSection, getSectionId);
+        // console.log(indexOfCurrentSection, getSectionId);
         if(indexOfCurrentSection === -1) {
             cpyFilters = {
                 ...cpyFilters,
                 [getSectionId] : [getCurrentOption.id]
             }
 
-            console.log(cpyFilters)
+            // console.log(cpyFilters)
         } 
         else {
             const indexOfCurrentOption = cpyFilters[getSectionId].indexOf(getCurrentOption.id);
@@ -108,7 +108,7 @@ function StudentViewCoursesPage() {
        } 
     }, []);
 
-    console.log(loadingState, '');
+    // console.log(loadingState, '');
 
     return (
         <div
