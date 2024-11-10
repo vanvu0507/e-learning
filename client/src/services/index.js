@@ -73,6 +73,13 @@ export async function updateCourseByIdService(id, formData) {
     return data
 }
 
+export async function deleteCourseService(courseId) {
+    const {data} = await axiosInstance.delete(`/instructor/course/delete/${courseId}`);
+    
+    return data;
+}
+
+
 export async function fetchStudentViewCourseListService(query) {
     const {data} = await axiosInstance.get(`/student/course/get?${query}`);
 
@@ -110,6 +117,12 @@ export async function captureAndFinalizePaymentService(paymentId, payerId, order
 
 export async function fetchStudentBoughtCoursesService(studentId) {
     const {data} = await axiosInstance.get(`/student/courses-bought/get/${studentId}`);
+
+    return data
+}
+
+export async function createEmptyStudentCourseService(studentId) {
+    const {data} = await axiosInstance.post(`/student/courses-bought/create/${studentId}`);
 
     return data
 }

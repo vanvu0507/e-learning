@@ -60,6 +60,4 @@ const loginUser = async(req,res) => {
     })
 };
 
-const checkAuth = 
-
 module.exports = {registerUser, loginUser};
