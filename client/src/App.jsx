@@ -13,6 +13,7 @@ import StudentViewCourseDetailsPage from './pages/student/course-details'
 import PaypalPaymentReturnPage from './pages/student/payment-return'
 import StudentCoursesPage from './pages/student/student-courses'
 import StudentViewCourseProgressPage from './pages/student/course-progress'
+import AddNewInstructorPage from './pages/instructor/add-new-instructor'
 
 function App() {
 
@@ -60,6 +61,18 @@ function App() {
         <RouteGuard
         element={
           <AddNewCoursePage/>
+        }
+        authenticated={auth?.authenticate}
+        user={auth?.user}
+        />
+      }
+      />
+      <Route
+      path='/instructor/create-new-instructor'
+      element={
+        <RouteGuard
+        element={
+          <AddNewInstructorPage/>
         }
         authenticated={auth?.authenticate}
         user={auth?.user}

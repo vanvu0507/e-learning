@@ -1,8 +1,12 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from "react-router-dom";
 
 function InstructorManageUsers({ listOfUsers }) {
+
+  const navigate = useNavigate();
     
   const usersWithRole = (role) => {
     return listOfUsers.filter(user => user.role === role);
@@ -10,9 +14,17 @@ function InstructorManageUsers({ listOfUsers }) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Manage Users</CardTitle>
-      </CardHeader>
+      <CardHeader className="flex justify-between flex-row items-center">
+        <CardTitle className="text-3xl font-extrabold">Manage Users</CardTitle>
+          <Button
+            onClick={() => {
+              navigate('/instructor/create-new-course');
+            }}
+            className="p-6"
+          >
+            Create New Instructor
+          </Button>
+        </CardHeader>
       <CardContent>
         <Tabs defaultValue="users">
           <TabsList className="space-x-4">

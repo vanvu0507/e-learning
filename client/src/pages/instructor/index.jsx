@@ -13,7 +13,7 @@ import { useContext, useEffect, useState } from "react";
 
 function InstructorDashboardPage({instructor}) {
 
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('');
   const {resetCredentials} = useContext(AuthContext)
   const {instructorCourseList, setInstructorCourseList} = useContext(InstructorContext);
   const [listOfUsers, setListOfUsers] = useState([]);
@@ -38,6 +38,10 @@ function InstructorDashboardPage({instructor}) {
   useEffect(()=> {
     fetchAllCourse();
     fetchAllUser();
+
+    const tab = sessionStorage.getItem('activeTab') || 'dashboard'
+
+    setActiveTab(tab)
 
     const interval = setInterval(() => {
       fetchAllCourse();
@@ -91,7 +95,10 @@ function InstructorDashboardPage({instructor}) {
                 key = {menuItem.value}
                 variant = {activeTab === menuItem.value ? 'default' : 'ghost'}
                 onClick = {menuItem.value === 'logout' ?
-                  handleLogout : ()=> setActiveTab(menuItem.value)
+                  handleLogout : ()=> {
+                    setActiveTab(menuItem.value)
+                    sessionStorage.setItem('activeTab', menuItem.value)
+                  }
                 }
                 >
                 <menuItem.icon className="mr-2 h-4 w-4"/>
