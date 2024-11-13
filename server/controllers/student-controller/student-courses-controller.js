@@ -24,34 +24,36 @@ const getCoursesByStudentId = async(req,res) => {
 const createStudentCourse = async (req, res) => {
     try {
         const { studentId } = req.params;
-
-        let studentCourses = await StudentCourses.findOne({ userId: studentId });
-        console.log(studentCourses);
+        console.log('USER ID: ' + studentId);
         
-        if (studentCourses) {
+        // Kiểm tra xem người dùng đã có document StudentCourses chưa
+        const existingStudentCourses = await StudentCourses.findOne({ studentId });
+        if (existingStudentCourses) {
             return res.status(400).json({
                 success: false,
-                message: 'Student course record already exists!'
+                message: 'StudentCourses đã tồn tại cho người dùng này'
             });
         }
 
-        studentCourses = new StudentCourses({
+        // Tạo document StudentCourses mới cho người dùng
+        const newStudentCourses = new StudentCourses({
             userId: studentId,
-            courses: []
+            courses: []  // Mảng khóa học khởi tạo rỗng
         });
 
-        await studentCourses.save();
+        await newStudentCourses.save();
 
         res.status(201).json({
             success: true,
-            message: 'Student course record created successfully!',
-            data: studentCourses
+            message: 'StudentCourses được tạo thành công!',
+            data: newStudentCourses
         });
     } catch (error) {
-        console.error(error);
+        console.error(error);  // Thêm dòng này để log lỗi chi tiết
         res.status(500).json({
             success: false,
-            message: 'Some error occurred!'
+            message: 'Lỗi server khi tạo StudentCourses',
+            error: error.message
         });
     }
 };
