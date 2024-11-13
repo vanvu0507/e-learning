@@ -25,12 +25,6 @@ function InstructorDashboardPage() {
     
   }
 
-  function handleCourseDeleted(deletedCourseId) {
-    setInstructorCourseList(prevCourses => 
-      prevCourses.filter(course => course._id !== deletedCourseId)
-    );
-  }
-
   useEffect(()=> {
     fetchAllCourse()
   },[])
@@ -40,13 +34,13 @@ function InstructorDashboardPage() {
       icon: BarChart,
       label: 'Dashboard',
       value: 'dashboard',
-      component: <InstructorDashboard listOfCourses={instructorCourseList} onCourseDeleted={handleCourseDeleted}/>
+      component: <InstructorDashboard listOfCourses={instructorCourseList} onCourseChanged={fetchAllCourse}/>
     },
     {
       icon: Book,
       label: 'Courses',
       value: 'courses',
-      component: <InstructorCourses listOfCourses={instructorCourseList} onCourseDeleted={handleCourseDeleted}/>
+      component: <InstructorCourses listOfCourses={instructorCourseList} onCourseChanged={fetchAllCourse}/>
     },
     {
       icon: LogOut,

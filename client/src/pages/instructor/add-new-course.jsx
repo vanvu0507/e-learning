@@ -3,21 +3,38 @@ import CourseLanding from "@/components/instructor-view/courses/add-new-course/c
 import CourseSettings from "@/components/instructor-view/courses/add-new-course/course-settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { courseCurriculumInitialFormData, courseLandingInitialFormData } from "@/config";
 import { AuthContext } from "@/context/auth-context";
 import { InstructorContext } from "@/context/instructor-context";
-import { addNewCourseService, fetchInstructorCourseDetailsService, updateCourseByIdService } from "@/services";
-import { useContext, useEffect } from "react";
+import { addNewCourseService, fetchInstructorCourseDetailsService, fetchInstructorCourseListService, updateCourseByIdService } from "@/services";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 function AddNewCoursePage() {
 
-    const {courseLandingFormData, setCourseLandingFormData, courseCurriculumFormData, setCourseCurriculumFormData, currentEditedCourseId, setCurrentEditedCourseId} = useContext(InstructorContext);
+    const {courseLandingFormData, setCourseLandingFormData, courseCurriculumFormData, setCourseCurriculumFormData, currentEditedCourseId, setCurrentEditedCourseId, instructorCourseList, setInstructorCourseList} = useContext(InstructorContext);
+
+    const [isPublished, setIsPublished] = useState(true);
 
     const {auth} = useContext(AuthContext)
     const navigate = useNavigate()
     const params = useParams()
+
+    async function fetchAllCourse() {
+        const response = await fetchInstructorCourseListService()
+    
+        if(response.success) {
+          setInstructorCourseList(response?.data)
+        }    
+        
+    }
+
+    function handleIsPublishedChange(value) {
+        setIsPublished(value);
+    }
 
     function isEmpty(value) {
         if(Array.isArray(value)) {
@@ -50,15 +67,21 @@ function AddNewCoursePage() {
     }
 
     async function handleCreateCourse() {
+        let students = [];
+        if(currentEditedCourseId) {
+            fetchAllCourse();            
+            const course = instructorCourseList.find(course => course._id === currentEditedCourseId);
+            students = course?.students            
+        }
+        
         const courseFinalFormData = {
             instructorId: auth?.user?._id,
             instructorName: auth?.user?.userName,
             date: new Date(),
             ...courseLandingFormData,
-            students: [
-            ],
+            students: students,
             curriculum: courseCurriculumFormData,
-            isPublised: Boolean,
+            isPublished: isPublished,
         }
         
         const response = 
@@ -86,7 +109,7 @@ function AddNewCoursePage() {
 
             setCourseLandingFormData(setCourseFormData);
             setCourseCurriculumFormData(response?.data?.curriculum);
-            
+            setIsPublished(response?.data?.isPublished)
         }
     }
 
@@ -112,11 +135,21 @@ function AddNewCoursePage() {
             <CardContent>
                 <div className="container mx-auto p-4">
                     <Tabs defaultValue="curriculum" className="space-y-4">
-                        <TabsList>
-                            <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
-                            <TabsTrigger value="course-landing-page">Course Landing Page</TabsTrigger>
-                            <TabsTrigger value="settings">Settings</TabsTrigger>
-                        </TabsList>
+                        <div className="flex items-center justify-between">
+                            <TabsList>
+                                <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
+                                <TabsTrigger value="course-landing-page">Course Landing Page</TabsTrigger>
+                                <TabsTrigger value="settings">Settings</TabsTrigger>
+                            </TabsList>
+                            <div className="flex items-center space-x-2">
+                                    <Switch
+                                    onCheckedChange={handleIsPublishedChange}
+                                    checked={isPublished}
+                                    id="isPublished"
+                                    />
+                                    <Label htmlFor="isPublished">Published</Label>
+                            </div>
+                        </div>
 
                         <TabsContent value="curriculum">
                             <CourseCurriculum/>
