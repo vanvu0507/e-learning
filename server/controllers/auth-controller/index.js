@@ -68,4 +68,30 @@ const loginUser = async(req,res) => {
     })
 };
 
-module.exports = {registerUser, loginUser};
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+
+        if (users.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No users found',
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Fetched all users successfully!',
+            data: users,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.message,
+        });
+    }
+};
+
+module.exports = { registerUser, loginUser, getAllUsers };

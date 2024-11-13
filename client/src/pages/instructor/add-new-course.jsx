@@ -123,7 +123,7 @@ function AddNewCoursePage() {
 
     return <div className="container mx-auto p-4">
         <div className="flex justify-between">
-            <h1 className="text-3xl font-extrabold mb-5">Create a new course</h1>
+            <h1 className="text-3xl font-extrabold mb-5">{currentEditedCourseId ? "Edit course" : "Create a new course"}</h1>
             <Button disabled={!validateFormData()}
              className="text-sm tracking-wider font-bold px-8"
              onClick={handleCreateCourse}

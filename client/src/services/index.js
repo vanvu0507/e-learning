@@ -21,6 +21,12 @@ export async function checkAuthService() {
     return data
 }
 
+export async function fetchUsersListService() {
+    const {data} = await axiosInstance.get(`/auth/get-all-users`);
+
+    return data
+}
+
 export async function mediaUploadService(formData, onProgressCallback) {
     const {data} = await axiosInstance.post('/media/upload', formData, {
         onUploadProgress: (ProgressEvent=> {

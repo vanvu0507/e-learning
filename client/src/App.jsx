@@ -35,7 +35,7 @@ function App() {
       element={
         <RouteGuard
         element={
-          <InstructorDashboardPage/>
+          <InstructorDashboardPage instructor={auth?.user}/>
         }
         authenticated={auth?.authenticate}
         user={auth?.user}
