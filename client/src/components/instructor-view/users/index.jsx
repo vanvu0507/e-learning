@@ -18,7 +18,7 @@ function InstructorManageUsers({ listOfUsers }) {
         <CardTitle className="text-3xl font-extrabold">Manage Users</CardTitle>
           <Button
             onClick={() => {
-              navigate('/instructor/create-new-course');
+              navigate('/instructor/create-new-instructor');
             }}
             className="p-6"
           >
