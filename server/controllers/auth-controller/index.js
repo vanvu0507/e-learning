@@ -2,6 +2,7 @@
 const User = require('../../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
 const registerUser = async(req, res) => {
 
@@ -19,7 +20,14 @@ const registerUser = async(req, res) => {
     const hashPassword = await bcrypt.hash(password, 10);
     const newUser = new User({userName, userEmail, role, password: hashPassword})
 
-    await newUser.save();
+    const savedUser = await newUser.save();
+
+    // Gọi route tạo StudentCourses sau khi đăng ký thành công
+    try {
+        await axios.post(`http://localhost:5000/student/courses-bought/create/${savedUser._id}`);
+    } catch (error) {
+        console.log(error)
+    }
 
     return res.status(201).json({
         success: true,
