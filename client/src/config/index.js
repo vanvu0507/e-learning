@@ -59,7 +59,7 @@ export const languageOptions = [
   { id: "japanese", label: "Japanese" },
   { id: "korean", label: "Korean" },
   { id: "portuguese", label: "Portuguese" },
-  { id: "arabic", label: "Arabic" },
+  { id: "vietnamese", label: "Vietnamese" },
   { id: "russian", label: "Russian" },
 ];
 
@@ -76,7 +76,7 @@ export const courseCategories = [
   { id: "machine-learning", label: "Machine Learning" },
   { id: "artificial-intelligence", label: "Artificial Intelligence" },
   { id: "cloud-computing", label: "Cloud Computing" },
-  { id: "cyber-security", label: "Cyber Security" },
+  { id: "frontend-development", label: "Frontend Development" },
   { id: "mobile-development", label: "Mobile Development" },
   { id: "game-development", label: "Game Development" },
   { id: "software-engineering", label: "Software Engineering" },

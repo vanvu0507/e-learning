@@ -9,6 +9,15 @@ export async function registerService(formData) {
     return data
 }
 
+export async function registerInstructorService(formData) {
+    const {data} = await axiosInstance.post('/auth/register', {
+        ...formData,
+        role: 'instructor'
+    });
+
+    return data
+}
+
 export async function loginService(formData) {
     const {data} = await axiosInstance.post('/auth/login', formData);
 
@@ -17,6 +26,12 @@ export async function loginService(formData) {
 
 export async function checkAuthService() {
     const {data} = await axiosInstance.get('/auth/check-auth');
+
+    return data
+}
+
+export async function fetchUsersListService() {
+    const {data} = await axiosInstance.get(`/auth/get-all-users`);
 
     return data
 }
