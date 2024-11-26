@@ -76,6 +76,7 @@ function App() {
         }
         authenticated={auth?.authenticate}
         user={auth?.user}
+        requiredRole="admin"
         />
       }
       />

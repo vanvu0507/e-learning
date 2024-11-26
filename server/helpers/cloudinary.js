@@ -21,11 +21,25 @@ const uploadMediaToCloudinary = async(filePath)=> {
 };
 
 const deleteMediaFromCloudinary = async(publicId)=> {
-    try {
-        await cloudinary.uploader.destroy(publicId);
-    } catch (error) {
-        console.log(error);
-        throw new Error('Failed to detete asset from cloudinary')
+    const resourceTypes = ['image', 'video', 'raw']; // Các loại tài nguyên cần thử
+    let deleted = false;
+
+    for (const resourceType of resourceTypes) {
+        try {
+            const result = await cloudinary.uploader.destroy(publicId, {
+                resource_type: resourceType,
+                invalidate: true,
+            });
+
+            if (result.result === 'ok') {
+                console.log(`Asset deleted successfully as ${resourceType}`);
+                deleted = true;
+                break;
+            }
+        } catch (error) {
+            console.log(error);
+            throw new Error('Failed to detete asset from cloudinary')
+        }
     }
 };
 

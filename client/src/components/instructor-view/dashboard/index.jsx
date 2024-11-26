@@ -74,7 +74,10 @@ function InstructorDashboard({ listOfCourses }) {
         {
             icon: DollarSign,
             label: "Total Revenue",
-            value: totalProfit
+            value: new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+            }).format(totalProfit)
         },
         {
             icon: BookOpen,
@@ -145,7 +148,12 @@ function InstructorDashboard({ listOfCourses }) {
                                 <td className="px-4 py-2">{course.category}</td>
                                 <td className="px-4 py-2">{course.instructorName || "Unknown"}</td>
                                 <td className="px-4 py-2">{course.students.length}</td>
-                                <td className="px-4 py-2">${course.pricing * course.students.length}</td>
+                                <td className="px-4 py-2">{
+                                    new Intl.NumberFormat('en-EN', {
+                                        style: 'currency',
+                                        currency: 'USD',
+                                    }).format(course.pricing * course.students.length)
+                                }</td>
                             </tr>
                         ))}
                     </tbody>

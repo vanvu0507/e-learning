@@ -7,7 +7,7 @@ import { InstructorContext } from "@/context/instructor-context";
 import { Delete, Edit } from "lucide-react";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteCourseService, updateCourseByIdService } from "@/services";
+import { deleteCourseService, mediaDeleteService, updateCourseByIdService } from "@/services";
 
 function InstructorCourses({ listOfCourses, onCourseChanged }) {
     const navigate = useNavigate();
@@ -16,6 +16,13 @@ function InstructorCourses({ listOfCourses, onCourseChanged }) {
     const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
     const [unpublishDialogOpen, setUnpublishDialogOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [searchQuery, setSearchQuery] = useState(""); // State lưu trữ giá trị tìm kiếm
+
+    // Lọc các khóa học dựa trên tìm kiếm
+    const filteredCourses = listOfCourses.filter(course =>
+        course.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const handleDeleteCourse = async (courseId) => {
         const course = listOfCourses.find(course => course._id === courseId);
@@ -32,11 +39,39 @@ function InstructorCourses({ listOfCourses, onCourseChanged }) {
         }
     };
 
+    const extractPublicIdFromUrl = (url) => {
+        if (!url) return null;
+
+        const parts = url.split('/upload/');
+        if (parts.length < 2) return null;
+
+        const filePath = parts[1];
+        const segments = filePath.split('/');
+        const lastSegment = segments.pop();
+
+        const publicId = lastSegment.split('.')[0];
+
+        return publicId;
+    };
+
     const deleteCourse = async () => {
         try {
+            setIsDeleting(true);
+
             setDeletingCourseId(selectedCourse._id);
+
+            const publicIds = selectedCourse.curriculum.map(lecture => lecture.public_id).filter(Boolean);
+            const imagePublicId = extractPublicIdFromUrl(selectedCourse.image);
+            if (imagePublicId) {
+                publicIds.push(imagePublicId);
+            }
+
+            for (const publicId of publicIds) {
+                await mediaDeleteService(publicId);
+            }
+
             await deleteCourseService(selectedCourse._id);
-            if(onCourseChanged) {
+            if (onCourseChanged) {
                 onCourseChanged();
             }
             alert("Course deleted successfully");
@@ -52,7 +87,7 @@ function InstructorCourses({ listOfCourses, onCourseChanged }) {
         try {
             await updateCourseByIdService(selectedCourse._id, { isPublished: false });
             alert("Course unpublished successfully");
-            if(onCourseChanged) {
+            if (onCourseChanged) {
                 onCourseChanged();
             }
         } catch (error) {
@@ -66,6 +101,16 @@ function InstructorCourses({ listOfCourses, onCourseChanged }) {
         <Card>
             <CardHeader className="flex justify-between flex-row items-center">
                 <CardTitle className="text-3xl font-extrabold">All Courses</CardTitle>
+
+                {/* Thanh tìm kiếm */}
+                <input
+                    type="text"
+                    placeholder="Search by course name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="p-2 border border-gray-300 rounded-md"
+                />
+
                 <Button
                     onClick={() => {
                         setCurrentEditedCourseId(null);
@@ -91,12 +136,17 @@ function InstructorCourses({ listOfCourses, onCourseChanged }) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {listOfCourses && listOfCourses.length > 0 ? (
-                                listOfCourses.map((course) => (
+                            {filteredCourses && filteredCourses.length > 0 ? (
+                                filteredCourses.map((course) => (
                                     <TableRow key={course._id}>
                                         <TableCell className="font-medium">{course?.title}</TableCell>
                                         <TableCell>{course?.students?.length}</TableCell>
-                                        <TableCell>${course?.students?.length * course?.pricing}</TableCell>
+                                        <TableCell>
+                                            {new Intl.NumberFormat('en-US', {
+                                                style: 'currency',
+                                                currency: 'USD',
+                                            }).format(course?.students?.length * course?.pricing)}
+                                        </TableCell>
                                         <TableCell>{course?.isPublished ? "Yes" : "No"}</TableCell>
                                         <TableCell className="text-right">
                                             <Button
@@ -119,7 +169,11 @@ function InstructorCourses({ listOfCourses, onCourseChanged }) {
                                         </TableCell>
                                     </TableRow>
                                 ))
-                            ) : null}
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan="5" className="text-center">No courses found</TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </div>
@@ -133,10 +187,10 @@ function InstructorCourses({ listOfCourses, onCourseChanged }) {
                         <DialogDescription>Are you sure you want to delete this course?</DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button onClick={() => setConfirmDeleteDialogOpen(false)} variant="outline">
+                        <Button onClick={() => setConfirmDeleteDialogOpen(false)} disabled={isDeleting} variant="outline">
                             Cancel
                         </Button>
-                        <Button onClick={handleConfirmDelete}>Yes, Delete</Button>
+                        <Button onClick={handleConfirmDelete} disabled={isDeleting}>Yes, Delete</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

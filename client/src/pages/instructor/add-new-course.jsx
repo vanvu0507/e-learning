@@ -3,6 +3,7 @@ import CourseLanding from "@/components/instructor-view/courses/add-new-course/c
 import CourseSettings from "@/components/instructor-view/courses/add-new-course/course-settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,6 +19,8 @@ function AddNewCoursePage() {
     const {courseLandingFormData, setCourseLandingFormData, courseCurriculumFormData, setCourseCurriculumFormData, currentEditedCourseId, setCurrentEditedCourseId, instructorCourseList, setInstructorCourseList} = useContext(InstructorContext);
 
     const [isPublished, setIsPublished] = useState(true);
+    const [notificationDialogOpen, setNotificationDialogOpen] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState("");
 
     const {auth} = useContext(AuthContext)
     const navigate = useNavigate()
@@ -89,9 +92,10 @@ function AddNewCoursePage() {
         await addNewCourseService(courseFinalFormData);
 
         if(response.success) {
+            setNotificationDialogOpen(true);
+            setNotificationMessage(response.message)
             setCourseLandingFormData(courseCurriculumInitialFormData);
             setCourseCurriculumFormData(courseCurriculumInitialFormData);
-            navigate(-1);
             setCurrentEditedCourseId(null);
         }
         
@@ -165,6 +169,21 @@ function AddNewCoursePage() {
                     </Tabs>
                 </div>
             </CardContent>
+
+            {/* Notification Dialog */}
+            <Dialog open={notificationDialogOpen} onOpenChange={setNotificationDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Success</DialogTitle>
+                        <DialogDescription>{notificationMessage}</DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button onClick={() => navigate(-1)} variant="outline">
+                            OK
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </Card>
     </div>
 }

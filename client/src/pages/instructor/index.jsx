@@ -64,12 +64,14 @@ function InstructorDashboardPage({instructor}) {
       value: 'courses',
       component: <InstructorCourses listOfCourses={instructorCourseList} onCourseChanged={fetchAllCourse}/>
     },
-    {
-      icon: Users,
-      label: 'Users',
-      value: 'users',
-      component: <InstructorManageUsers listOfUsers={listOfUsers} />
-    },
+    ...(instructor.role === 'admin'
+      ? [{
+          icon: Users,
+          label: 'Users',
+          value: 'users',
+          component: <InstructorManageUsers listOfUsers={listOfUsers} />
+        }]
+      : []),
     {
       icon: LogOut,
       label: 'Logout',
