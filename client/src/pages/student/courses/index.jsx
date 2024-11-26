@@ -11,7 +11,7 @@ import { checkCoursePurchaseInfoService, fetchStudentViewCourseListService } fro
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 
 function createSearchParamsHelper(filterParams) {
     const queryParams = [];
@@ -34,42 +34,42 @@ function StudentViewCoursesPage() {
     const { studentViewCoursesList, setStudentViewCoursesList, loadingState, setLoadingState } = useContext(StudentContext);
     const navigate = useNavigate();
     const {auth} = useContext(AuthContext);
+    
+    const location = useLocation();  // Lấy location của trang hiện tại
+    const { category, level, title, instructorName, searchQuery } = location.state || {}; // Lấy state từ location, hoặc {} nếu không có state
 
     function handleFilterOnChange(getSectionId, getCurrentOption) {
         let cpyFilters = {...filters};
         const indexOfCurrentSection = Object.keys(cpyFilters).indexOf(getSectionId);
 
-        // console.log(indexOfCurrentSection, getSectionId);
         if(indexOfCurrentSection === -1) {
             cpyFilters = {
                 ...cpyFilters,
                 [getSectionId] : [getCurrentOption.id]
             }
-
-            // console.log(cpyFilters)
         } 
         else {
             const indexOfCurrentOption = cpyFilters[getSectionId].indexOf(getCurrentOption.id);
 
             if(indexOfCurrentOption === -1) cpyFilters[getSectionId].push(getCurrentOption.id)
             else cpyFilters[getSectionId].splice(indexOfCurrentOption, 1);        
-        }
-
+        }        
         setFilters(cpyFilters);
-        sessionStorage.setItem('filters', JSON.stringify(cpyFilters));
+        // sessionStorage.setItem('filters', JSON.stringify(cpyFilters));
     };
 
     async function fetchAllStudentViewCourses(filters, sort) {
+        
         const query = new URLSearchParams({
             ...filters,
-            sortBy: sort,
-        })
+        });
+               
         const response = await fetchStudentViewCourseListService(query);
         if(response?.success) {
             setStudentViewCoursesList(response?.data);
             setLoadingState(false);
         };
-      }
+    }
 
     async function handleCourseNavigate(getCurrentCourseId) {
         const response = await checkCoursePurchaseInfoService(
@@ -93,18 +93,52 @@ function StudentViewCoursesPage() {
     },[filters]);
 
     useEffect(() => {
+        // Nếu có dữ liệu từ location.state, cập nhật filters
+        if (category || level || title || instructorName || searchQuery) {
+            const newFilters = { ...filters };
+    
+            if (category) {
+                newFilters.category = [category];
+            }
+    
+            if (level) {
+                newFilters.level = [level];
+            }
+
+            if (instructorName) {
+                newFilters.instructorName = [instructorName];
+            }
+    
+            if (title) {
+                // Nếu bạn cần tìm kiếm theo tiêu đề, bạn có thể sử dụng trường title cho một API tìm kiếm khác
+                // Ở đây, chúng ta không đưa tiêu đề vào filters mà chỉ dùng khi cần
+                newFilters.title = [title];
+            }
+
+            if(searchQuery) {
+                newFilters.searchQuery = [searchQuery];
+            }
+    
+            setFilters(newFilters); // Cập nhật filters state
+            console.log(filters)
+            // sessionStorage.setItem('filters', JSON.stringify(newFilters)); // Lưu filters vào sessionStorage
+        }
+    }, [category, level, title, instructorName, searchQuery]); // Chỉ chạy khi category, level, hoặc title thay đổi
+
+    useEffect(() => {
         setSort('price-lowtohigh');
-        setFilters(JSON.parse(sessionStorage.getItem('filters')) || {});
+        // setFilters(JSON.parse(sessionStorage.getItem('filters')) || {});
     }, [])
 
     useEffect(() => {
-        if(filters !== null && sort !== null)
-        fetchAllStudentViewCourses(filters, sort);
+        if(filters) {
+            fetchAllStudentViewCourses(filters, sort);
+        } 
     }, [filters, sort]);
 
     useEffect(() => {
        return () => {
-        sessionStorage.removeItem("filters")
+        // sessionStorage.removeItem("filters")
        } 
     }, []);
 
@@ -211,6 +245,9 @@ function StudentViewCoursesPage() {
                     <div
                     className="space-y-4"
                     >
+                    {/* <h2 className="text-xl font-semibold mb-4">
+                        {title ? `Search results for "${title}"` : "Courses"}
+                    </h2> */}
                         {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
                                 studentViewCoursesList.map(courseItem =>(
                                     <Card onClick={() => handleCourseNavigate(courseItem?._id)} className="cursor-pointer" key={courseItem?._id}>

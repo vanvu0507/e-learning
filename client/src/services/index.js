@@ -92,6 +92,16 @@ export async function fetchStudentViewCourseDetailService(courseId) {
     return data
 }
 
+export async function fetchCourseSearchSuggestions(query) {
+    const { data } = await axiosInstance.get(`/student/course/search-suggestions?query=${query}`);
+    return data;
+}
+
+export async function fetchCourseSearch(query) {
+    const { data } = await axiosInstance.get(`/student/course/search-courses?query=${query}`);
+    return data;
+}
+
 export async function checkCoursePurchaseInfoService(courseId, studentId) {
     const {data} = await axiosInstance.get(`/student/course/purchase-info/${courseId}/${studentId}`);
 
