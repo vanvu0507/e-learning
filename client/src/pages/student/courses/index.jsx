@@ -36,7 +36,8 @@ function StudentViewCoursesPage() {
     const {auth} = useContext(AuthContext);
     
     const location = useLocation();  // Lấy location của trang hiện tại
-    const { category, level, title, instructorName, searchQuery } = location.state || {}; // Lấy state từ location, hoặc {} nếu không có state
+    const { category, level, title, instructorName } = location.state || {}; // Lấy state từ location, hoặc {} nếu không có state
+    const { searchQuery } = useContext(StudentContext);
 
     function handleFilterOnChange(getSectionId, getCurrentOption) {
         let cpyFilters = {...filters};
@@ -93,37 +94,35 @@ function StudentViewCoursesPage() {
     },[filters]);
 
     useEffect(() => {
-        // Nếu có dữ liệu từ location.state, cập nhật filters
-        if (category || level || title || instructorName || searchQuery) {
+        // Nếu có dữ liệu từ searchQuery, cập nhật filters
+        if (searchQuery) {
             const newFilters = { ...filters };
     
-            if (category) {
-                newFilters.category = [category];
-            }
+            // if (category) {
+            //     newFilters.category = [category];
+            // }
     
-            if (level) {
-                newFilters.level = [level];
-            }
+            // if (level) {
+            //     newFilters.level = [level];
+            // }
 
-            if (instructorName) {
-                newFilters.instructorName = [instructorName];
-            }
+            // if (instructorName) {
+            //     newFilters.instructorName = [instructorName];
+            // }
     
-            if (title) {
-                // Nếu bạn cần tìm kiếm theo tiêu đề, bạn có thể sử dụng trường title cho một API tìm kiếm khác
-                // Ở đây, chúng ta không đưa tiêu đề vào filters mà chỉ dùng khi cần
-                newFilters.title = [title];
-            }
+            // if (title) {
+            //     // Nếu bạn cần tìm kiếm theo tiêu đề, bạn có thể sử dụng trường title cho một API tìm kiếm khác
+            //     // Ở đây, chúng ta không đưa tiêu đề vào filters mà chỉ dùng khi cần
+            //     newFilters.title = [title];
+            // }
 
             if(searchQuery) {
                 newFilters.searchQuery = [searchQuery];
             }
-    
             setFilters(newFilters); // Cập nhật filters state
-            console.log(filters)
-            // sessionStorage.setItem('filters', JSON.stringify(newFilters)); // Lưu filters vào sessionStorage
+            console.log(filters);
         }
-    }, [category, level, title, instructorName, searchQuery]); // Chỉ chạy khi category, level, hoặc title thay đổi
+    }, [searchQuery]); // Chỉ chạy khi category, level, hoặc title thay đổi
 
     useEffect(() => {
         setSort('price-lowtohigh');

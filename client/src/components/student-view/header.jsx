@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { useContext, useState } from "react";
 import { AuthContext } from "@/context/auth-context";
 import { fetchCourseSearch, fetchCourseSearchSuggestions } from "@/services";
+import { StudentContext } from "@/context/student-context";
 
 function StudentViewCommonHeader() {
 
@@ -12,13 +13,12 @@ function StudentViewCommonHeader() {
 
     const { resetCredentials } = useContext(AuthContext)
 
-    const [searchQuery, setSearchQuery] = useState('');
+    const {searchQuery, setSearchQuery} = useContext(StudentContext);
     const [searchResults, setSearchResults] = useState([]);
 
     const handleSearchChange = async (event) => {
       const query = event.target.value;
       setSearchQuery(query);
-
       if (query.length >= 3) { // Chỉ tìm kiếm khi người dùng nhập ít nhất 1 ký tự
         const response = await fetchCourseSearchSuggestions(query);
         if (response.success) {
@@ -44,15 +44,15 @@ function StudentViewCommonHeader() {
           });
     
           // Xóa kết quả gợi ý và làm trống thanh tìm kiếm
-          setSearchQuery('');
+          // setSearchQuery('');
           setSearchResults([]);
         }
       }
     };    
 
-    const handleSelectSuggestion = () => {
-      // Chuyển hướng đến trang StudentViewCoursesPage với dữ liệu tìm kiếm
-      navigate('/courses', { state: { category: searchResults[0].category, /*level: searchResults[0].level,*/ title: searchResults[0].title } });
+    const handleSelectSuggestion = (courseId) => {
+      // Redirect đến trang chi tiết khóa học
+      window.location.href = `/course/details/${courseId}`;
 
       // Reset search query và search results
       setSearchQuery('');
@@ -94,12 +94,12 @@ function StudentViewCommonHeader() {
           className="px-4 py-2 border rounded-lg"
           placeholder="Searching something !"
         />
-        {searchQuery.length > 1 && searchResults.length > 0 && (
+        {searchQuery.length > 0 && searchResults.length > 0 && (
           <ul className="absolute left-0 right-0 bg-white border mt-1 max-h-60 overflow-y-auto shadow-lg">
             {searchResults.map((course) => (
               <li
                 key={course._id}
-                onClick={() => handleSelectSuggestion()}
+                onClick={() => handleSelectSuggestion(course._id)}
                 className="px-4 py-2 cursor-pointer hover:bg-gray-200"
               >
                 {course.title}
